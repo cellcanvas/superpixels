@@ -1,0 +1,14 @@
+name: superpixels
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.10
+  - jupyter
+  - numpy<2
+  - napari
+  - qtpy
+  - pyside2
+  - torch
+  - torchvision
+  - scikit-image
