@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cellcanvas-spp"
+dynamic = ["version"]
+description = 'Superpixels for Cell Canvas'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "CZ Hackathon Cell Canvas Team" }
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "numpy<2",
+  "scipy",
+  "pyift",
+  "scikit-image",
+]
+
+[project.urls]
+Documentation = "https://github.com/cellcanvas/superpixels#readme"
+Issues = "https://github.com/cellcanvas/superpixels/issues"
+Source = "https://github.com/cellcanvas/superpixels"
+
+[tool.hatch.version]
+path = "src/cellcanvas_spp/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/cellcanvas_spp tests}"
+
+[tool.coverage.run]
+source_pkgs = ["cellcanvas_spp", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/cellcanvas_spp/__about__.py",
+]
+
+[tool.coverage.paths]
+cellcanvas_spp = ["src/cellcanvas_spp", "*/cellcanvas-spp/src/cellcanvas_spp"]
+tests = ["tests", "*/cellcanvas-spp/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
