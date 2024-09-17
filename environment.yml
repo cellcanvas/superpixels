@@ -9,6 +9,6 @@ dependencies:
   - napari
   - qtpy
   - pyside2
-  - torch
+  - pytorch
   - torchvision
   - scikit-image
