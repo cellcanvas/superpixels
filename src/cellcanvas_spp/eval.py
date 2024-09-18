@@ -1,6 +1,9 @@
 """
-This module implements the confusion matrix and Cohen's kappa score.
+This module implements the confusion matrix and Cohen's kappa score from the predicted values of the ground truth
+through cross-validation:
 
+Cross-Validation: Technique to split the data into "folds" and train the model on part of the data while testing it
+on the rest
 Cohen's kappa score: A statistic that measures the agreement between predicted and true classes, adjusted for chance.
 Confusion matrix: Shows the performance of the classification model by displaying the true and predicted classes in a
 matrix form.
@@ -8,6 +11,8 @@ matrix form.
 
 from dataclasses import dataclass
 from sklearn.metrics import confusion_matrix, cohen_kappa_score
+from sklearn.svm import SVC
+from sklearn.model_selection import cross_val_predict
 import pandas as pd
 
 
@@ -17,22 +22,22 @@ class EvaluationResult:
     confusion_matrix: pd.DataFrame
 
 
-def evaluate_spp_features(df: pd.DataFrame, ground_truth_label: str, predicted_label: str) -> EvaluationResult:
+def evaluate_spp_features(df: pd.DataFrame) -> EvaluationResult:
     """
     Evaluates superpixel features by calculating Cohen's kappa score and the
     confusion matrix based on ground truth and predicted labels.
-
-    Example?
-        df = pd.DataFrame({
-        ...     'ground_truth': [1, 0, 1, 1, 0],
-        ...     'predicted': [1, 0, 1, 0, 0]
-        ... })
-        result = evaluate_spp_features(df, 'ground_truth', 'predicted')
     """
-    y_true = df[ground_truth_label]
-    y_pred = df[predicted_label]
+    estimator = SVC()
+    x = df.drop(columns="ground_truth")  # feature set
+    y_true = df["ground_truth"]  # labels
+
+    # creating predicted labels based on SVC. Automatically defaults to 5 folds.
+    y_pred = cross_val_predict(estimator, x, y_true)
 
     kappa_score = cohen_kappa_score(y_true, y_pred)
     conf_matrix = confusion_matrix(y_true, y_pred)
+
+    print("Kappa:", kappa_score)
+    print("Confusion:", conf_matrix)
 
     return EvaluationResult(kappa_score, pd.DataFrame(conf_matrix))
