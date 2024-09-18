@@ -3,6 +3,7 @@ from numpy.typing import ArrayLike
 from skimage.measure import regionprops_table
 import numpy as np
 from tqdm import tqdm
+from scipy.ndimage import find_objects
 
 def superpixel_regionprops_features(
     image: ArrayLike,
@@ -44,11 +45,14 @@ def superpixel_cellcanvas_features(
     """
     if embedding_axis != len(embeddings.shape) - 1:
         embeddings = np.moveaxis(embeddings, embedding_axis, -1)
-    
-    dt = dict()
-    labels = np.unique(superpixels)
-    for label in tqdm(labels):
-        ssp= np.median(embeddings[superpixels==label], axis=0)
-        dt[label] = ssp
 
-    return  pd.DataFrame(dt)
+    dt = dict()
+    for label,obj in tqdm(enumerate(find_objects(superpixels), start=1)):
+        if obj is None:
+            continue
+    
+        mask = superpixels[obj] == label
+        median_emb = np.median(embeddings[obj][mask], axis=0)
+        dt[label] = median_emb
+    
+    return  pd.DataFrame.from_dict(dt, orient='index')
