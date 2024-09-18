@@ -2,7 +2,7 @@ import pandas as pd
 from numpy.typing import ArrayLike
 
 
-def superpixel_features(
+def superpixel_regionprops_features(
     image: ArrayLike,
     superpixels: ArrayLike,
 ) -> pd.DataFrame:
