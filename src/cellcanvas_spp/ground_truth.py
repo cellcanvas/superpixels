@@ -21,24 +21,17 @@ def intensity_voxel_counts(
     return counts
 
 
-def get_gt_label_per_super_pixel(
-        df: pd.DataFrame,
-) -> pd.DataFrame:
+def get_gt_label_per_super_pixel(row) :
     # Function to from the 8 label counts to single label (the class with most pixels, or background)
 
-    max_label = np.zeros(df.shape[0])
-    for index, row in df.iterrows():
-        counts = row.values
-        # if at least pixel in the superpixel has a gt-label, assign this label (1-7)
-        if np.max(counts[1:])>0:
-            idx = np.argmax(counts[1:])+1
-        # if no gt-label is present in superpixel, assign background (0)
-        else:
-            idx = 0
-        max_label[index] = idx
-    df_out = pd.DataFrame(max_label, columns=['ground_truth'])
-
-    return df_out
+    counts = row.values
+    # if at least pixel in the superpixel has a gt-label, assign this label (1-7)
+    if np.max(counts[1:])>0:
+        idx = np.argmax(counts[1:])+1
+    # if no gt-label is present in superpixel, assign background (0)
+    else:
+        idx = 0
+    return idx
 
 
 def ground_truth_count(
@@ -50,21 +43,17 @@ def ground_truth_count(
     props = regionprops_table(
         superpixels,
         intensity_image=ground_truth,
-        # properties=['label', 'area'],  # Add other properties as needed
+        properties=['label'],  # Add other properties as needed
         extra_properties=[intensity_voxel_counts]
         )
-
-    # make dataframe with 8 columns (1 per label)
+    
+    # make into dataframe and set label as index
     props_df = pd.DataFrame(props)
+    props_df = props_df.set_index('label')
 
-    # remove unnecessary columns
-    props_df = props_df.drop(['label', 'bbox-0', 'bbox-1', 'bbox-2', 'bbox-3', 'bbox-4', 'bbox-5'], axis=1)
-
-    # rename columns
-    for i in range(8):
-        props_df = props_df.rename(columns={"intensity_voxel_counts-"+str(i): "label_"+str(i)})
-
-    # collapse 8 columns to 1 columns (based on majority vote)
-    gt_df = get_gt_label_per_super_pixel(props_df)
+    # get majority label per superpixel and set column name
+    gt_df = props_df.apply(get_gt_label_per_super_pixel, axis=1)
+    gt_df = gt_df.to_frame()
+    gt_df.columns = ['ground_truth']
 
     return gt_df
