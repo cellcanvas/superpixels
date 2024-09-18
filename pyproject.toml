@@ -29,6 +29,7 @@ dependencies = [
   "scipy",
   "pyift",
   "scikit-image",
+  "pytest",
 ]
 
 [project.urls]
