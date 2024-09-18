@@ -11,7 +11,7 @@ def mock_complete_dataframe() -> pd.DataFrame:
         {
             "area": [10, 1000, 5000],
             "intensity_mean": [-0.1, 5, -0.5],
-            "ground-truth": [0, 7, 7],
+            "ground_truth": [0, 7, 7],
         },
         index=pd.Index([5, 2024, 10], name="superpixel"),
     )
