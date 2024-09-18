@@ -2,7 +2,7 @@ import pandas as pd
 from numpy.typing import ArrayLike
 from skimage.measure import regionprops_table
 import numpy as np
-
+from tqdm import tqdm
 
 def superpixel_regionprops_features(
     image: ArrayLike,
@@ -47,7 +47,7 @@ def superpixel_cellcanvas_features(
     
     dt = dict()
     labels = np.unique(superpixels)
-    for label in labels:
+    for label in tqdm(labels):
         ssp= np.median(embeddings[superpixels==label], axis=0)
         dt[label] = ssp
 
