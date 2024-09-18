@@ -1,10 +1,9 @@
-from typing import Callable, Optional, Tuple
-
-from numpy.typing import ArrayLike
-from torch.utils.data import Dataset
-from scipy.ndimage import find_objects
+from typing import Callable, Optional, Dict, Union
 
 import pandas as pd
+from numpy.typing import ArrayLike
+from scipy.ndimage import find_objects
+from torch.utils.data import Dataset
 
 
 class SuperpixelsDataset(Dataset):
@@ -16,6 +15,7 @@ class SuperpixelsDataset(Dataset):
         transforms: Optional[Callable] = None,
         remove_background: bool = False,
     ) -> None:
+        super().__init__()
 
         self.image = image
         self.superpixels = superpixels
@@ -35,7 +35,7 @@ class SuperpixelsDataset(Dataset):
     def __getitem__(
         self,
         idx: int,
-    ) -> Tuple[ArrayLike, int]:
+    ) -> Dict[str, Union[ArrayLike, int]]:
 
         label = self.labels.iloc[idx]
         spp_idx = self.labels.index[idx]
@@ -50,4 +50,7 @@ class SuperpixelsDataset(Dataset):
         if self.transforms:
             crop = self.transforms(crop)
         
-        return crop, label
+        return {
+            "image": crop,
+            "label": label,
+        }

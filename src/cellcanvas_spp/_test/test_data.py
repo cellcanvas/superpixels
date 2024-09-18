@@ -20,7 +20,7 @@ def test_data_loader() -> None:
 
     dataset = SuperpixelsDataset(image, superpixels, labels, remove_background=True)
 
-    for img, lb in dataset:
+    for item in dataset:
         # qualitative check :D
-        print(img.shape)
-        print(lb)
+        print(item["image"].shape)
+        print(item["label"])
