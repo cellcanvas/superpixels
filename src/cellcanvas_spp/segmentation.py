@@ -3,6 +3,7 @@ from typing import Literal
 from numpy.typing import ArrayLike
 from pyift.shortestpath import watershed_from_minima
 from skimage.filters import sobel
+from skimage.segmentation import relabel_sequential
 
 import scipy.ndimage as ndi
 
@@ -36,7 +37,7 @@ def superpixels(
 
     _, segm = watershed_from_minima(grad, H_minima=h_minima)
 
-    return segm
+    return relabel_sequential(segm)[0]
 
 
 def superpixels_hws(
@@ -101,4 +102,4 @@ def superpixels_hws(
     area = hg.attribute_area(tree)
     labels = hg.labelisation_horizontal_cut_from_threshold(tree, area, area_threshold)
 
-    return labels
+    return relabel_sequential(labels)[0]
