@@ -21,6 +21,7 @@ import pandas as pd
 class EvaluationResult:
     cohen_kappa: float
     confusion_matrix: pd.DataFrame
+    y_pred: pd.DataFrame
 
 
 def evaluate_spp_features(df: pd.DataFrame,**kwargs) -> EvaluationResult:
@@ -39,7 +40,7 @@ def evaluate_spp_features(df: pd.DataFrame,**kwargs) -> EvaluationResult:
     kappa_score = cohen_kappa_score(y_true, y_pred)
     conf_matrix = confusion_matrix(y_true, y_pred)
 
-    print("Kappa:", kappa_score)
-    print("Confusion:", conf_matrix)
+    # print("Kappa:", kappa_score)
+    # print("Confusion:", conf_matrix)
 
-    return EvaluationResult(kappa_score, pd.DataFrame(conf_matrix))
+    return EvaluationResult(kappa_score, pd.DataFrame(conf_matrix), pd.DataFrame(y_pred,columns=['y_pred']))
