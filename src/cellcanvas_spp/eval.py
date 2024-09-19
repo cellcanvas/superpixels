@@ -12,6 +12,7 @@ matrix form.
 from dataclasses import dataclass
 from sklearn.metrics import confusion_matrix, cohen_kappa_score
 from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_predict
 import pandas as pd
 
@@ -22,12 +23,13 @@ class EvaluationResult:
     confusion_matrix: pd.DataFrame
 
 
-def evaluate_spp_features(df: pd.DataFrame) -> EvaluationResult:
+def evaluate_spp_features(df: pd.DataFrame,**kwargs) -> EvaluationResult:
     """
     Evaluates superpixel features by calculating Cohen's kappa score and the
     confusion matrix based on ground truth and predicted labels.
     """
-    estimator = SVC()
+    # estimator = SVC(**kwargs)
+    estimator = RandomForestClassifier(**kwargs)
     x = df.drop(columns="ground_truth")  # feature set
     y_true = df["ground_truth"]  # labels
 
