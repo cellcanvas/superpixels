@@ -1,7 +1,11 @@
 import pandas as pd
+import copick
+from copick.impl.filesystem import CopickRoot
 from numpy.typing import ArrayLike
 from skimage.measure import regionprops_table
 import numpy as np
+import zarr
+
 
 def intensity_voxel_counts(
         regionmask: ArrayLike, 
@@ -85,12 +89,19 @@ def get_gt_label_per_super_pixel(row) :
     # Function to from the 8 label counts to single label (the class with most pixels, or background)
 
     counts = row.values
-    # if at least pixel in the superpixel has a gt-label, assign this label (1-7)
-    if np.max(counts[1:])>0:
-        idx = np.argmax(counts[1:])+1
-    # if no gt-label is present in superpixel, assign background (0)
-    else:
-        idx = 0
+
+    weights = np.ones_like(counts)
+    weights[0] = 0.25
+
+   # if at least pixel in the superpixel has a gt-label, assign this label (1-7)
+    idx = np.argmax(counts * weights)
+
+    # if np.max(counts[1:])>0:
+    #     idx = np.argmax(counts[1:])+1
+
+    # # if no gt-label is present in superpixel, assign background (0)
+    # else:
+    #     idx = 0
     return idx
 
 def ground_truth_count(
@@ -145,3 +156,33 @@ def ground_truth_stats(
     ]
 
     return props_df
+
+
+def copick_to_ground_truth_image(
+    root: CopickRoot,
+    run_name: str,
+) -> ArrayLike:
+
+    particles = {}
+
+    particles = dict()
+    for po in root.config.pickable_objects:
+        particles[po.name] = po.label
+
+    segmentations = root.get_run(run_name).get_segmentations()
+    ground_truth = None
+
+    for cls_seg in segmentations:
+        _, cls_mask = list(zarr.open(cls_seg.zarr()).arrays())[0]
+        cls_mask = cls_mask[...]
+
+        if ground_truth is None:
+            ground_truth = np.zeros(cls_mask.shape, dtype=int)
+
+        try:
+            ground_truth[cls_mask == 1] = particles[cls_seg.name]
+        except KeyError:
+            print(f"Class {cls_seg.name} not found in particles dictionary")
+            pass
+
+    return ground_truth
