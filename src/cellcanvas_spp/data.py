@@ -1,8 +1,9 @@
 from typing import Callable, Optional, Dict, Union
 
 import pandas as pd
+import numpy as np
 from numpy.typing import ArrayLike
-from scipy.ndimage import find_objects
+from scipy import ndimage
 from torch.utils.data import Dataset
 
 
@@ -12,7 +13,7 @@ class SuperpixelsDataset(Dataset):
         image: ArrayLike,
         superpixels: ArrayLike,
         labels: pd.Series,
-        transforms: Optional[Callable] = None,
+        transform: Optional[Callable] = None,
         remove_background: bool = False,
     ) -> None:
         super().__init__()
@@ -21,11 +22,11 @@ class SuperpixelsDataset(Dataset):
         self.superpixels = superpixels
         self.labels = labels
         self.remove_background = remove_background
-        self.transforms = transforms
+        self.transform = transform
 
         self.bboxes = {
             spp: bbox 
-            for spp, bbox in enumerate(find_objects(superpixels), start=1)
+            for spp, bbox in enumerate(ndimage.find_objects(superpixels), start=1)
             if bbox is not None
         }
 
@@ -47,10 +48,12 @@ class SuperpixelsDataset(Dataset):
             bkg_mask = self.superpixels[bbox] != spp_idx
             crop[bkg_mask] = 0
         
-        if self.transforms:
-            crop = self.transforms(crop)
-        
-        return {
+        data = {
             "image": crop,
             "label": label,
         }
+
+        if self.transform:
+            data = self.transform(data)
+        
+        return data
