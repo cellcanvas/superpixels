@@ -3,7 +3,7 @@ from numpy.typing import ArrayLike
 from skimage.measure import regionprops_table
 import numpy as np
 from tqdm import tqdm
-from scipy.ndimage import find_objects
+from scipy import ndimage
 
 def superpixel_regionprops_features(
     image: ArrayLike,
@@ -47,7 +47,7 @@ def superpixel_cellcanvas_features(
         embeddings = np.moveaxis(embeddings, embedding_axis, -1)
 
     dt = dict()
-    for label,obj in tqdm(enumerate(find_objects(superpixels), start=1)):
+    for label,obj in tqdm(enumerate(ndimage.find_objects(superpixels), start=1)):
         if obj is None:
             continue
     
