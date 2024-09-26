@@ -62,7 +62,7 @@ def ground_truth_count(
     gt_df = gt_df.to_frame()
     gt_df.columns = ['ground_truth']
 
-    print('gt_df[57391]:',gt_df.loc[57391])
+    #print('gt_df[57391]:',gt_df.loc[57391])
 
 
     return gt_df
