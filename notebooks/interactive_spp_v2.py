@@ -38,8 +38,8 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 # Set up the data directory
-DATA_DIR = Path("/Users/jordao.bragantini/Softwares/superpixels/notebooks/data/copick_10439/synthetic_data_10439_dataportal.json")
-run_name = "16191"
+DATA_DIR = Path("/Users/kevin.zhao/Documents/projects/cellcanvas-org/superpixels/copick_10439/synthetic_data_10439_dataportal.json")
+run_name = "16193"
 
 # Load the tomogram
 def load_tomogram():
@@ -58,7 +58,7 @@ crop_3D = full_tomogram[:]
 
 # Compute superpixels
 # superpixel_seg = superpixels(crop_3D, sigma=4, h_minima=0.0025)
-superpixel_seg = tifffile.imread(DATA_DIR.parent / f'segm_{run_name}_10000.tif')
+superpixel_seg = tifffile.imread(DATA_DIR.parent / f'segm_{run_name}.tif')
 
 # Set up Napari viewer
 viewer = napari.Viewer()
