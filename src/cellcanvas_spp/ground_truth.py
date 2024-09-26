@@ -85,12 +85,18 @@ def get_gt_label_per_super_pixel(row) :
     # Function to from the 8 label counts to single label (the class with most pixels, or background)
 
     counts = row.values
-    # if at least pixel in the superpixel has a gt-label, assign this label (1-7)
-    if np.max(counts[1:])>0:
-        idx = np.argmax(counts[1:])+1
-    # if no gt-label is present in superpixel, assign background (0)
-    else:
-        idx = 0
+
+    weights = np.ones_like(counts,dtype='float')
+    weights[0] = 0.3
+
+    idx = np.argmax(counts * weights)
+
+    # # if at least pixel in the superpixel has a gt-label, assign this label (1-7)
+    # if np.max(counts[1:])>0:
+    #     idx = np.argmax(counts[1:])+1
+    # # if no gt-label is present in superpixel, assign background (0)
+    # else:
+    #     idx = 0
     return idx
 
 def ground_truth_count(
