@@ -7,7 +7,7 @@ name = "cellcanvas-spp"
 dynamic = ["version"]
 description = 'Superpixels for Cell Canvas'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = "MIT"
 keywords = []
 authors = [
@@ -25,9 +25,9 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "numpy<2",
+  "numpy",
   "scipy",
-  "pyift",
+  "pyift>0.1.0",
   "scikit-image",
   "pytest",
 ]
